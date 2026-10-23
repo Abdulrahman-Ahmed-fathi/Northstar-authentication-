@@ -1,0 +1,2 @@
+import type { Metadata } from "next"; import { AuthCard } from "@/components/auth/auth-card"; import { ForgotPasswordForm } from "@/features/auth/components/forgot-password-form";
+export const metadata:Metadata={title:"Reset your password"}; export default function ForgotPasswordPage(){return <AuthCard title="Reset your password" description="Enter your email and we’ll guide you through the next step. This demo does not send an email."><ForgotPasswordForm/></AuthCard>}

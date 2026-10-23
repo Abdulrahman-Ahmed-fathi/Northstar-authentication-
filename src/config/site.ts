@@ -1,0 +1,1 @@
+export const siteConfig = { name: "Northstar", description: "A clearer way for your team to plan, align, and make progress.", copyright: `© ${new Date().getFullYear()} Northstar, Inc.`, apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api" } as const;

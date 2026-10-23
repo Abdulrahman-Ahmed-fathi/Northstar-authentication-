@@ -1,0 +1,1 @@
+export type LoginInput={email:string;password:string;rememberMe:boolean}; export type RegisterInput={fullName:string;email:string;password:string}; export type PasswordResetInput={email:string}; export type AuthSuccess={message:string}; export type AuthFailure={message:string}; export type AuthResult=AuthSuccess|AuthFailure;
