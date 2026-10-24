@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 import { z } from "zod";
 
@@ -7,21 +6,18 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
 
-  PORT: z.coerce
-    .number()
-    .int()
-    .min(1)
-    .max(65535)
-    .default(5000),
+  PORT: z.coerce.number().int().min(1).max(65535).default(5000),
 
-  FRONTEND_URL: z
-    .string()
-    .url()
-    .default("http://localhost:3000"),
+  FRONTEND_URL: z.string().url().default("http://localhost:3000"),
 
-  DATABASE_URL: z
+  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+
+  RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required"),
+
+  EMAIL_FROM: z
     .string()
-    .min(1, "DATABASE_URL is required"),
+    .email("EMAIL_FROM must be a valid email address")
+    .default("onboarding@resend.dev")
 });
 
 const result = envSchema.safeParse(process.env);
@@ -30,9 +26,7 @@ if (!result.success) {
   console.error("Invalid environment configuration:");
 
   for (const issue of result.error.issues) {
-    console.error(
-      `- ${issue.path.join(".")}: ${issue.message}`
-    );
+    console.error(`- ${issue.path.join(".")}: ${issue.message}`);
   }
 
   process.exit(1);
