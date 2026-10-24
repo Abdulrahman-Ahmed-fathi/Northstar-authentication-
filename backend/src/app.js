@@ -1,14 +1,14 @@
-import "dotenv/config";
 
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-
+import { env } from "./config/env.js";
 import healthRoutes from "./routes/health.js";
+import { notFoundHandler } from "./middlewares/not-found.middleware.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
+
 
 const app = express();
-
-const frontendOrigin = process.env.FRONTEND_URL || "http://localhost:3000";
 
 
 //common http security headers
@@ -17,7 +17,7 @@ app.use(helmet())
 
 //allow requests from the configured frontend origin
 app.use(cors({
-    origin: frontendOrigin,
+    origin: env.FRONTEND_URL,
     credentials: true,
 }))
 
@@ -30,14 +30,12 @@ app.use(express.json({
 //Register API routes 
 app.use("/api/v1", healthRoutes)
 
-// handle unknown routes
-app.use((req,res)=>{
-    res.status(404).json({
-        error:{
-            code: "not_found",
-            message: "The requested resource was not found"
-        }
-    })
-})
+
+app.use(notFoundHandler)
+
+
+app.use(errorHandler)
+
+
 
 export default app;
