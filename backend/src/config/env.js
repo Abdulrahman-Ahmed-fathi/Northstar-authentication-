@@ -17,7 +17,14 @@ const envSchema = z.object({
   EMAIL_FROM: z
     .string()
     .email("EMAIL_FROM must be a valid email address")
-    .default("onboarding@resend.dev")
+    .default("onboarding@resend.dev"),
+
+  JWT_ACCESS_SECRET: z
+    .string()
+    .regex(
+      /^[A-Za-z0-9_-]{43}$/,
+      "JWT_ACCESS_SECRET must be a valid 32-byte base64url secret"
+    )
 });
 
 const result = envSchema.safeParse(process.env);
