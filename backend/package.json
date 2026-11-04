@@ -6,7 +6,8 @@
     "test": "node --test \"src/tests/*.test.js\"",
     "dev": "node --import=tsx --watch src/server.js",
     "start": "node --import=tsx src/server.js",
-    "test:email": "node src/scripts/test-email.js"
+    "test:email": "node src/scripts/test-email.js",
+    "test:password-reset-email": "node src/scripts/test-password-reset-email.js"
   },
   "keywords": [],
   "author": "",

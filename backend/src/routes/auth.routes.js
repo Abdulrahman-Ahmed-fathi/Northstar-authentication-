@@ -27,7 +27,6 @@ import { loginController } from "../controllers/auth.controller.js";
 
 import { loginSchema } from "../schemas/auth.schema.js";
 
-import { rateLimit } from "express-rate-limit";
 import { loginRateLimiter } from "../middlewares/login-rate-limit.middleware.js";
 import {
   refreshController,
@@ -43,11 +42,27 @@ import {
 } from "../middlewares/refresh-rate-limit.middleware.js";
 import { authenticate } from "../middlewares/authenticate.middleware.js";
 import { getMeController } from "../controllers/auth.controller.js";
+import {
+  forgotPasswordController,
+} from "../controllers/auth.controller.js";
 
+import {
+  forgotPasswordSchema,
+} from "../schemas/auth.schema.js";
 
+import {
+  forgotPasswordRateLimiter,
+} from "../middlewares/forgot-password-rate-limit.middleware.js";
 
-
-
+import {
+  resetPasswordController,
+} from "../controllers/auth.controller.js";
+import {
+  resetPasswordSchema,
+} from "../schemas/auth.schema.js";
+import {
+  resetPasswordRateLimiter,
+} from "../middlewares/reset-password-rate-limit.middleware.js";
 
 router.post(
     "/register",
@@ -96,4 +111,17 @@ router.get(
   getMeController
 );
 
+router.post(
+  "/forgot-password",
+  forgotPasswordRateLimiter,
+  validate(forgotPasswordSchema),
+  forgotPasswordController
+);
+
+router.post(
+  "/reset-password",
+  resetPasswordRateLimiter,
+  validate(resetPasswordSchema),
+  resetPasswordController
+);
 export default router
