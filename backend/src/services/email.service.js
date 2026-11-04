@@ -90,3 +90,106 @@ If you did not request this, you can ignore this email.
 
   return { id: data.id };
 }
+
+
+export async function sendPasswordResetEmail({
+  to,
+  name,
+  token,
+  testMode = false,
+}) {
+  const resetUrl = new URL(
+    "/reset-password",
+    env.FRONTEND_URL
+  );
+
+  resetUrl.searchParams.set("token", token);
+
+  const safeName = escapeHtml(name || "there");
+  const safeUrl = escapeHtml(resetUrl.toString());
+
+  const subject = testMode
+    ? "[TEST] Reset your Northstar password"
+    : "Reset your Northstar password";
+
+  const testNotice = testMode
+    ? "<p><strong>Test only:</strong> This reset link is not valid.</p>"
+    : "";
+
+  const textTestNotice = testMode
+    ? "\nTEST ONLY: This reset link is not valid.\n"
+    : "";
+
+  const { data, error } = await resend.emails.send({
+    from: env.EMAIL_FROM,
+    to: [to],
+    subject,
+
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2>Reset your Northstar password</h2>
+
+        <p>Hello ${safeName},</p>
+
+        <p>
+          We received a request to reset the password
+          associated with your Northstar account.
+        </p>
+
+        ${testNotice}
+
+        <p>
+          <a href="${safeUrl}">
+            Reset your password
+          </a>
+        </p>
+
+        <p>
+          This link expires after 30 minutes and
+          can only be used once.
+        </p>
+
+        <p>
+          If you did not request a password reset,
+          you can safely ignore this email.
+        </p>
+      </div>
+    `,
+
+    text: `
+Reset your Northstar password
+
+Hello ${name || "there"},
+
+We received a request to reset the password
+associated with your Northstar account.
+
+Reset your password using this link:
+${resetUrl.toString()}
+
+This link expires after 30 minutes
+and can only be used once.
+${textTestNotice}
+
+If you did not request a password reset,
+you can safely ignore this email.
+    `.trim(),
+  });
+
+  if (error) {
+    const sendError = new Error(
+      "The email provider could not send the password reset email."
+    );
+
+    sendError.cause = error;
+    throw sendError;
+  }
+
+  if (!data?.id) {
+    throw new Error(
+      "The email provider did not return an email ID."
+    );
+  }
+
+  return { id: data.id };
+}

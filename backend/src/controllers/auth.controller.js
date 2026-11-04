@@ -27,6 +27,14 @@ import {
 } from "../utils/auth-cookies.js";
 
 import { ApiError } from "../utils/ApiError.js";
+import {
+  requestPasswordReset,
+} from "../services/forgot-password.service.js";
+
+import {
+  sendPasswordResetEmail,
+} from "../services/email.service.js";
+import { resetPassword } from "../services/reset-password.service.js";
 
 export async function registerController(req, res, next) {
   try {
@@ -270,5 +278,52 @@ export async function getMeController(req, res, next) {
     });
   } catch (error) {
     return next(error);
+  }
+}
+
+
+export async function forgotPasswordController(req, res, next) {
+  try {
+    await requestPasswordReset(
+      req.body.email,
+      prisma,
+      sendPasswordResetEmail
+    );
+
+    return res.status(200).json({
+      message:
+        "If an eligible account exists for this email, a password reset link will be sent.",
+      data: null,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function resetPasswordController(req, res, next) {
+  try {
+    const { token, newPassword } = req.body;
+
+    const isReset = await resetPassword(
+      token,
+      newPassword,
+      prisma
+    );
+
+    if (!isReset) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired password reset token.",
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Password has been reset successfully. Please log in again.",
+      data: null,
+    });
+  } catch (error) {
+    next(error);
   }
 }
